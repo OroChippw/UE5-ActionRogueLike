@@ -15,9 +15,9 @@ class ACTIONROGUELIKE_API APersonCharacter : public ACharacter
 {
 	GENERATED_BODY()
 
-public:
-	// Sets default values for this character's properties
-	APersonCharacter();
+protected:
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<AActor> ProjectileClass;
 
 protected:
 	// 让编辑器能看到所有的变量
@@ -31,6 +31,13 @@ protected:
 	virtual void BeginPlay() override;
 
 	void MoveForward(float value);
+	void MoveRight(float value);
+
+	void PrimaryAttack();
+
+public:
+	// Sets default values for this character's properties
+	APersonCharacter();
 
 public:	
 	// Called every frame
