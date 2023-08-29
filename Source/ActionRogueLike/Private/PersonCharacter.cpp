@@ -1,16 +1,18 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
+#include "PersonCharacter.h"
+#include "InteractionComponent.h"
 
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
-#include "PersonCharacter.h"
+
 
 // Sets default values
 APersonCharacter::APersonCharacter()
 {
- 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+ 	// 将此角色设置为每帧调用Tick()。  如果不需要此特性，可以关闭以提升性能。
 	PrimaryActorTick.bCanEverTick = true;
 
 	// 赋值的名字"SpringArmComp"将会直接在编辑器里面显示
@@ -23,22 +25,30 @@ APersonCharacter::APersonCharacter()
 	CameraComp = CreateDefaultSubobject<UCameraComponent>("CameraComp");
 	CameraComp->SetupAttachment(SpringArmComp);
 
+	// 添加交互组件
+	InteractionComp = CreateDefaultSubobject<UInteractionComponent>("InteractionComp");
+
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 
 	// 角色的偏航旋转将不受控制器输入的影响
 	bUseControllerRotationYaw = false;
+
+	// 初始化部分属性值
+
 }
 
 // Called when the game starts or when spawned
 void APersonCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
 	
 }
 
 void APersonCharacter::MoveForward(float Value)
 {
 	// 想要人物跟着相机的方向进行移动，而不是角色的朝向移动
+	// 保留了控制器在 Yaw 轴上的旋转
 	FRotator ControlRot = GetControlRotation();
 	ControlRot.Pitch = 0.0f;
 	ControlRot.Roll = 0.0f;
@@ -58,11 +68,44 @@ void APersonCharacter::MoveRight(float Value)
 	AddMovementInput(RightVector , Value);
 }
 
+void APersonCharacter::MoveJump()
+{
+	bool canJump = true;
+	if (canJump)
+	{
+		bPressedJump = true;
+		Jump();
+	}	
+}
+
+void APersonCharacter::StopJump()
+{
+	bPressedJump = false;
+}
+
+void APersonCharacter::ToggleCrouch()
+{
+	bool canCrouch = true;
+	if (canCrouch && !bIsCrouched)
+	{
+		Crouch();
+		bIsCrouched = true;
+	}
+}
+
+void APersonCharacter::StopCrouch()
+{
+	if (bIsCrouched)
+	{
+		UnCrouch();
+		bIsCrouched = false;
+	}
+}
+
 void APersonCharacter::PrimaryAttack()
 {
 
 	FVector RightHandLocation = GetMesh()->GetSocketLocation("Muzzle_01");
-
 
 	FTransform SpawnToMatrix = FTransform(GetControlRotation() , RightHandLocation);
 
@@ -73,9 +116,42 @@ void APersonCharacter::PrimaryAttack()
 
 }
 
+void APersonCharacter::PrimaryInteract()
+{
+	if (InteractionComp)
+	{
+		InteractionComp->PrimaryInteract();
+	}
+}
+
+
 // Called every frame
 void APersonCharacter::Tick(float DeltaTime)
 {
+	// // 绘制一个角色和控制器的方向调试箭头
+	// FVector LineStart = GetActorLocation(); // UE中FVector是左手坐标系
+	// // FVector DrawScale(1.0f, 1.0f, 1.0f); // 默认大小
+	// float DrawScale = 1.0f; // 默认大小
+
+	// float Thickness = 1.0f; // 默认线条粗细
+	
+	// LineStart += GetActorRightVector() * 100.0f;// 将起点位置向右侧偏移
+	// // 根据角色的前方方向设置射线终点
+	// FVector ActorDirection_LineEnd = LineStart + (GetActorForwardVector() * 100.0f);
+	// // 绘制角色前方方向的调试箭头
+	// DrawDebugDirectionalArrow(
+	// 	GetWorld() , LineStart , ActorDirection_LineEnd , DrawScale , \
+	// 	FColor::Yellow , false , 0.0f , 0 , Thickness
+	// );
+
+	// // 根据控制器的旋转设置射线终点
+	// FVector ControllerDirection_LineEnd = LineStart + (GetControlRotation().Vector() * 100.0f);
+	// // 绘制控制器旋转的调试箭头
+	// DrawDebugDirectionalArrow(
+    // 	GetWorld() , LineStart , ControllerDirection_LineEnd , DrawScale , \
+    // 	FColor::Green , false , 0.0f , 0 , Thickness
+	// );
+
 	Super::Tick(DeltaTime);
 
 }
@@ -88,13 +164,22 @@ void APersonCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	// 绑定轴实现键盘WASD键前后左右移动
 	PlayerInputComponent->BindAxis("MoveForward" , this , &APersonCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight" , this , &APersonCharacter::MoveRight);
+	
 
-
-	// 绑定欧拉角中的Yaw实现水平偏航，Pitch是垂直旋转，Roll是滚动
+	// 绑定Yaw实现左右水平偏航，Pitch是俯仰倾斜旋转，Roll是侧翻滚动
 	PlayerInputComponent->BindAxis("Turn" , this , &APawn::AddControllerYawInput);
 	PlayerInputComponent->BindAxis("LookUp" , this , &APawn::AddControllerPitchInput);
 
 	// 绑定动作实现攻击发射魔法弹
 	PlayerInputComponent->BindAction("PrimaryAttack" , IE_Pressed , this , &APersonCharacter::PrimaryAttack);
+
+	// 绑定空格键实现角色的跳跃、shift键实现角色的下蹲
+	PlayerInputComponent->BindAction("MoveJump" , IE_Pressed , this , &APersonCharacter::MoveJump);
+	PlayerInputComponent->BindAction("MoveJump" , IE_Released , this , &APersonCharacter::StopJump);
+	PlayerInputComponent->BindAction("Crouch" , IE_Pressed , this , &APersonCharacter::ToggleCrouch);
+	PlayerInputComponent->BindAction("Crouch" , IE_Released , this , &APersonCharacter::StopCrouch);
+	
+	// 绑定E键位实现与其他Actor的交互
+	PlayerInputComponent->BindAction("PrimaryInteract" , IE_Pressed , this , &APersonCharacter::PrimaryInteract);
 }
 
