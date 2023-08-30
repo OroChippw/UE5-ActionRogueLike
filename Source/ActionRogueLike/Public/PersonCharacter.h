@@ -10,6 +10,7 @@
 class UCameraComponent;
 class USpringArmComponent;
 class UInteractionComponent;
+class UAnimMontage;
 
 UCLASS()
 class ACTIONROGUELIKE_API APersonCharacter : public ACharacter
@@ -19,11 +20,7 @@ class ACTIONROGUELIKE_API APersonCharacter : public ACharacter
 private:
 	bool test;
 
-protected:
-	UPROPERTY(EditAnywhere)
-	TSubclassOf<AActor> ProjectileClass;
-
-protected:
+protected: 
 	UPROPERTY(VisibleAnywhere) // 让编辑器能看到所有的变量
 	USpringArmComponent* SpringArmComp;
 
@@ -33,6 +30,15 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	UInteractionComponent* InteractionComp;
 
+	UPROPERTY(EditAnywhere , Category = "Attack")
+	TSubclassOf<AActor> ProjectileClass; // 定义魔法弹子类
+
+	UPROPERTY(EditAnywhere , Category = "Attack")
+	UAnimMontage* AttackAnim; // 定义攻击动画
+
+	FTimerHandle TimerHandle_PrimaryAttack; // 定义攻击定时器句柄
+
+protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
@@ -48,6 +54,7 @@ protected:
 
 	// Attack Action
 	void PrimaryAttack();
+	void PrimaryAttack_TimeElapsed();
 
 	// Interaction Action
 	void PrimaryInteract();

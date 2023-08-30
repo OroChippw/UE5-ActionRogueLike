@@ -21,15 +21,15 @@ public:
 
 protected:
 	// 定义球体作为碰撞组件
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere , BlueprintReadOnly)
 	USphereComponent* SphereComp;
 
 	// 抛射物组件，用以初始速度/方向，遵循不同的弹道轨迹
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere , BlueprintReadOnly)
 	UProjectileMovementComponent* MovementComp;
 
 	// 管理和渲染粒子系统的组件，控制粒子的外观、行为、材质
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere , BlueprintReadOnly)
 	UParticleSystemComponent* EffectComp;
 
 

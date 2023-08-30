@@ -26,12 +26,13 @@ public:
 	AItemChest();
 
 protected:
-	// Chest的主体Mesh
-	UPROPERTY(VisibleAnywhere)
+	// Chest的箱体Mesh
+	// BlueprintReadOnly是为了确保蓝图不会对组件进行修改
+	UPROPERTY(VisibleAnywhere , BlueprintReadOnly)
 	UStaticMeshComponent* BaseMesh;
 
-	// Chest的盖子Mesh
-	UPROPERTY(VisibleAnywhere)
+	// Chest的箱盖Mesh
+	UPROPERTY(VisibleAnywhere , BlueprintReadOnly)
 	UStaticMeshComponent* LidMesh;
 
 	// Called when the game starts or when spawned

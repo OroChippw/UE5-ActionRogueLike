@@ -104,16 +104,26 @@ void APersonCharacter::StopCrouch()
 
 void APersonCharacter::PrimaryAttack()
 {
+	PlayAnimMontage(AttackAnim); // 添加攻击抬手动画
 
+	// 添加计时器产生延迟避免在抬手前就已经释放魔法弹，0.2秒后才触发
+	// 方法二是使用动画事件 TODO
+	GetWorldTimerManager().SetTimer(TimerHandle_PrimaryAttack , \
+			this , &APersonCharacter::PrimaryAttack_TimeElapsed , 0.2f);
+	
+	// 清楚掉掉计时器
+	// GetWorldTimerManager().ClearTimer(TimerHandle_PrimaryAttack);
+}
+
+void APersonCharacter::PrimaryAttack_TimeElapsed()
+{
 	FVector RightHandLocation = GetMesh()->GetSocketLocation("Muzzle_01");
-
 	FTransform SpawnToMatrix = FTransform(GetControlRotation() , RightHandLocation);
-
+	
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
 	GetWorld()->SpawnActor<AActor>(ProjectileClass , SpawnToMatrix , SpawnParams);
-
 }
 
 void APersonCharacter::PrimaryInteract()
