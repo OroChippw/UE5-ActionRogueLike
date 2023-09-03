@@ -117,13 +117,19 @@ void APersonCharacter::PrimaryAttack()
 
 void APersonCharacter::PrimaryAttack_TimeElapsed()
 {
-	FVector RightHandLocation = GetMesh()->GetSocketLocation("Muzzle_01");
-	FTransform SpawnToMatrix = FTransform(GetControlRotation() , RightHandLocation);
+	// 使用ensure实现assert的断言效果，编译后只触发一次
+	// 持续触发使用ensureAlways，在进行游戏打包时要去除断言
+	if (ensure(ProjectileClass))
+	{
+		FVector RightHandLocation = GetMesh()->GetSocketLocation("Muzzle_01");
+		FTransform SpawnToMatrix = FTransform(GetControlRotation() , RightHandLocation);
 	
-	FActorSpawnParameters SpawnParams;
-	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-
-	GetWorld()->SpawnActor<AActor>(ProjectileClass , SpawnToMatrix , SpawnParams);
+		FActorSpawnParameters SpawnParams;
+		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+		SpawnParams.Instigator = this ; 
+		GetWorld()->SpawnActor<AActor>(ProjectileClass , SpawnToMatrix , SpawnParams);
+	}
+	
 }
 
 void APersonCharacter::PrimaryInteract()
