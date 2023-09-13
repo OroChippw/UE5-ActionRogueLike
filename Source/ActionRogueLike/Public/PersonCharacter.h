@@ -19,24 +19,38 @@ class ACTIONROGUELIKE_API APersonCharacter : public ACharacter
 
 private:
 	bool test;
+	float AttackAnimDelay = 0.2f;
 
 protected: 
-	UPROPERTY(VisibleAnywhere) // 让编辑器能看到所有的变量
-	USpringArmComponent* SpringArmComp;
+	UPROPERTY(VisibleAnywhere) // 允许UE编辑器能看到所有的变量，但不能编辑
+	USpringArmComponent* SpringArmComp; // 创建摄像机视角跟随游戏对象
 
 	UPROPERTY(VisibleAnywhere)
-	UCameraComponent* CameraComp;
+	UCameraComponent* CameraComp; // 创建摄像机
 	
 	UPROPERTY(VisibleAnywhere)
-	UInteractionComponent* InteractionComp;
+	UInteractionComponent* InteractionComp; // 创建和管理游戏中的交互性和交互行为
+
+	// EditAnywhere允许UE编辑器中编辑该属性的值，无论是实例级别还是类级别	
+	UPROPERTY(EditAnywhere , Category = "Attack") // Category则是显示属性的哪个类别
+	TSubclassOf<AActor> ProjectileClass; // 定义各种子类
 
 	UPROPERTY(EditAnywhere , Category = "Attack")
-	TSubclassOf<AActor> ProjectileClass; // 定义魔法弹子类
-
+	TSubclassOf<AActor> BlackHoleProjectileClass;
+	 
 	UPROPERTY(EditAnywhere , Category = "Attack")
+	TSubclassOf<AActor> DashProjectileClass; 
+
+	UPROPERTY(EditAnywhere , Category = "Attack") 
 	UAnimMontage* AttackAnim; // 定义攻击动画
 
-	FTimerHandle TimerHandle_PrimaryAttack; // 定义攻击定时器句柄
+	UPROPERTY(EditAnywhere , Category = "Attack")
+	UParticleSystem* CastingEffect; // 定义特效粒子
+
+	// 定义攻击定时器句柄
+	FTimerHandle TimerHandle_PrimaryAttack; 
+	FTimerHandle TimerHandle_BlackHoleAttack;
+	FTimerHandle TimerHandle_Dash;
 
 protected:
 	// Called when the game starts or when spawned
@@ -53,8 +67,15 @@ protected:
 	void StopCrouch();
 
 	// Attack Action
+	void SpawnProjectile(TSubclassOf<AActor> ClassToSpawn , FName SocketName);
+	void AttackEffects();
 	void PrimaryAttack();
 	void PrimaryAttack_TimeElapsed();
+	void BlackHoleAttack();
+	void BlackHoleAttack_TimeElapsed();
+	void Dash();
+	void Dash_TimeElapsed();
+
 
 	// Interaction Action
 	void PrimaryInteract();
