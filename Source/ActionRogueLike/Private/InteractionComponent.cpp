@@ -42,6 +42,8 @@ void UInteractionComponent::PrimaryInteract()
 	 
 	// 获取Actor角色的视角信息
 	AActor* MyOwner = GetOwner();
+
+	// 设置碰撞检测位置参数，从眼部开始
 	FVector EyeLocation;
 	FRotator EyeRotation;
 	MyOwner->GetActorEyesViewPoint(EyeLocation , EyeRotation);
@@ -59,6 +61,7 @@ void UInteractionComponent::PrimaryInteract()
 
 	// 使用球形追踪碰撞
 	TArray<FHitResult> HitResults; // 检测碰撞的数组
+
 	float Radius = 30.0f;
 
 	FCollisionShape Shape;
@@ -69,7 +72,7 @@ void UInteractionComponent::PrimaryInteract()
 
 	FColor LineColor = bBlockingHit ? FColor::Green : FColor::Red;
 
-	for (FHitResult HitResult : HitResults)
+	for (FHitResult &HitResult : HitResults)
 	{
 		AActor* HitActor = HitResult.GetActor();
 		if (HitActor)
@@ -86,5 +89,5 @@ void UInteractionComponent::PrimaryInteract()
 	}
 	
 
-	DrawDebugLine(GetWorld() , EyeLocation , End , LineColor , false, 2.0f , 0, 2.0f);
+	DrawDebugLine(GetWorld() , EyeLocation , End , LineColor , false, 2.0f , 0 , 2.0f);
 }

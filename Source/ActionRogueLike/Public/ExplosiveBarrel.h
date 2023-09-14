@@ -22,7 +22,7 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* MeshComp;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere) // 添加径向力
 	URadialForceComponent* ForceComp;
 
 	virtual void PostInitializeComponents() override;

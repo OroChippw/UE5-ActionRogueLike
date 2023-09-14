@@ -15,15 +15,6 @@ UCLASS()
 class ACTIONROGUELIKE_API AItemChest : public AActor , public IGamePlayInterface 
 {
 	GENERATED_BODY()
-public:
-	UPROPERTY(EditAnywhere)
-	float TargetPitch = 0.0f; // 箱盖和主题的俯仰开合程度
-	
-	void Interact_Implementation(APawn* InstigatorPawn);
-
-public:	
-	// Sets default values for this actor's properties
-	AItemChest();
 
 protected:
 	// Chest的箱体Mesh
@@ -37,6 +28,16 @@ protected:
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+public:
+	UPROPERTY(EditAnywhere)
+	float TargetPitch = 0.0f; // 箱盖和主题的俯仰开合程度
+	
+	void Interact_Implementation(APawn* InstigatorPawn);
+
+public:	
+	// Sets default values for this actor's properties
+	AItemChest();
 
 public:	
 	// Called every frame

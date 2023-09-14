@@ -29,6 +29,9 @@ APersonCharacter::APersonCharacter()
 	// 添加交互组件
 	InteractionComp = CreateDefaultSubobject<UInteractionComponent>("InteractionComp");
 
+	// 添加自定义属性组件
+	AttributeComp = CreateDefaultSubobject<UAttributeComponent>("AttributeComp");
+
 	// 控制角色朝移动方向自动旋转
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 

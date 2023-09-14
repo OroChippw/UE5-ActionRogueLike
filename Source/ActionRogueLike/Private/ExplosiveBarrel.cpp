@@ -11,6 +11,7 @@ AExplosiveBarrel::AExplosiveBarrel()
 {
 	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>("MeshComp");
 	MeshComp->SetSimulatePhysics(true);
+	// 启用静态网格模拟物理效果
 	RootComponent = MeshComp;
 
 	ForceComp = CreateDefaultSubobject<URadialForceComponent>("ForceComp");
@@ -21,7 +22,7 @@ AExplosiveBarrel::AExplosiveBarrel()
 	// 定义爆炸半径及强度
 	ForceComp->Radius = 750.0f;
 	ForceComp->ImpulseStrength = 2500.0f;
-	ForceComp->bImpulseVelChange = true;
+	ForceComp->bImpulseVelChange = true; // 忽略其他物体的质量
 
 	// 定义影响的Object type
 	ForceComp->AddCollisionChannelToAffect(ECC_WorldDynamic);
@@ -35,20 +36,20 @@ AExplosiveBarrel::AExplosiveBarrel()
 
 void AExplosiveBarrel::PostInitializeComponents()
 {
+	// 确保在执行自定义初始化代码之前执行了基类的初始化操作
 	Super::PostInitializeComponents();
-
+	// 当 MeshComp 组件被击中（碰撞）时，将调用 OnActorHit 函数，执行特定的操作
 	MeshComp->OnComponentHit.AddDynamic(this , &AExplosiveBarrel::OnActorHit);
 }
 
 void AExplosiveBarrel::OnActorHit(UPrimitiveComponent* HitComponent , AActor* OtherActor , UPrimitiveComponent* OtherComp , FVector NormalImpulse , const FHitResult& Hit)
 {
-	ForceComp->FireImpulse();
+	ForceComp->FireImpulse(); // 施加一个瞬时力
 
 	UE_LOG(LogTemp , Log , TEXT("OnActorHit in Explosive Barrel"));
 
 	// %s = string , %f = float
-	// 会输出如下形式的日志
-	// logs:"OtherActor:MyActor_1 , at gametime : xxxx.xx"
+	// 输出此形式的日志 logs:"OtherActor:MyActor_1 , at gametime : xxxx.xx"
 	UE_LOG(LogTemp , Warning , TEXT("OtherActor : %s , at game time : %f") , *GetNameSafe(OtherActor) , GetWorld()->TimeSeconds);
 
 	FString CombineString = FString::Printf(TEXT("Hit at location : %s") , *Hit.ImpactPoint.ToString());

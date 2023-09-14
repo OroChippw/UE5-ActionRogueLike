@@ -4,13 +4,18 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+
+#include "AttributeComponent.h"
+
 #include "PersonCharacter.generated.h"
+
 
 // 进行简单的定义告诉编译器我们在处理一个类
 class UCameraComponent;
 class USpringArmComponent;
 class UInteractionComponent;
 class UAnimMontage;
+class UAttributeComponent;
 
 UCLASS()
 class ACTIONROGUELIKE_API APersonCharacter : public ACharacter
@@ -30,6 +35,10 @@ protected:
 	
 	UPROPERTY(VisibleAnywhere)
 	UInteractionComponent* InteractionComp; // 创建和管理游戏中的交互性和交互行为
+
+	UPROPERTY(VisibleAnywhere , BlueprintReadOnly , Category = "Component")
+	UAttributeComponent* AttributeComp;
+
 
 	// EditAnywhere允许UE编辑器中编辑该属性的值，无论是实例级别还是类级别	
 	UPROPERTY(EditAnywhere , Category = "Attack") // Category则是显示属性的哪个类别
