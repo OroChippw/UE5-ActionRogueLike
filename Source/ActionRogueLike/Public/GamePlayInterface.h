@@ -23,7 +23,10 @@ class ACTIONROGUELIKE_API IGamePlayInterface
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	FText GetInteractText(APawn* InstigatorPawn);
+
 	// 实现交互功能，并接入各个Actor里面，并使用UFUNC将其暴露在蓝图里面
-	UFUNCTION(BlueprintCallable , BlueprintNativeEvent)
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	void Interact(APawn* InstigatorPawn);
 };

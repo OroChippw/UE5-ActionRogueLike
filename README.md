@@ -9,6 +9,8 @@
 * [2023.08.30] 实现人物抬手发射MagicProjectile攻击动画，添加TreasureChest的BluePrint回弹动画
 * [2023.08.31] 使用C++重新实现Explosive Barrel炸药桶💥
 * [2023.09.03] 学习UE Debug Tools⚒️
+* [2023.09.15] 实现BlackHoleAttack黑洞和DashProjectile传送弹
+
 
 
 
